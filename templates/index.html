@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>COVID - 19 Precaution</title></head>
+    <link rel="stylesheet" type="text/css" href="static/css/styleindex.css">
+  </head>
+  <body>
+  <center><h1>MASK DETECTION STREAMING</h1></center>
+    <left><img id="bg" src="{{ url_for('video_feed') }}"></left>
+    <video id="video" autoplay>Video Stream not available.</video>
+
+</div>
+<div style=" height:400px; width:300px; float:right;">
+<center>
+<h2>BOT CONTROLS</h2><br>
+<a href="#" id="up" style="font-size:30px;text-decoration:none;">FRONT<br></center>
+&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp;<a href="#" id="left" style="font-size:30px;text-decoration:none;"> &#x1F880;&#x1F880;</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#" id="right" style="font-size:30px; text-decoration:none;"> &#x1F882;&#x1F882;</a><br>
+<center><a href="#" id="down" style="font-size:30px;text-decoration:none;"> &#x1F883;&#x1F883;</a></center>
+</div>
+
+<div style=" height:400px; width:300px; float:right;">
+<center>
+<h2>CAM CONTROLS</h2><br>
+<form method="POST" action="slide">
+            <p>Servo Up Down <input type="range" min="1" max="12.5" name="slider1" /> </p>
+            <p>Servo Left Right <input type="range" min="1" max="12.5" name="slider2" /> </p>
+            <input type="submit" value="submit" />
+</form>
+</div>
+
+  </body>
+</html>

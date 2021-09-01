@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>COVID - 19 Precaution</title></head>
+    <link rel="stylesheet" type="text/css" href="static/css/styleindex.css">
+  </head>
+  <body>
+    <center><h1 class = 'head1'>FACE DETECTION STREAMING</h1></center>
+    <center><img id="bg" src="{{ url_for('video_feed_face') }}"></center>
+    <video id="video" autoplay>Video Stream not available.</video>
+  <form action="" method="post">
+        <center><input class="btn btn-default" type="submit" id = "Log" value="MOVE TO MASK DETECTION"></center>
+        <br>
+      </form>
+  </body>
+</html>
