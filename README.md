@@ -1,48 +1,65 @@
-import tensorflow
-from tensorflow.python.keras.models import load_model
-import cv2 as cv
-import numpy as np
+from flask import Flask, flash, redirect, render_template, request, session, abort,Response,url_for
+from camera import VideoCamera
+from camera2 import VideoCamera2
+import os
+app = Flask(__name__)
 
-model = load_model('model-017.model')
 
-face_clsfr=cv.CascadeClassifier('haarcascade_frontalface_default.xml')
+@app.route('/',methods=['GET', 'POST'])
+def welcome():
+    if request.method == 'POST':
+        return redirect(url_for('login'))
+    return render_template('welcome.html')
 
-cap = cv.VideoCapture(0)
-if not cap.isOpened():
-    print("Cannot open camera")
-    exit()
 
-labels_dict={0:'MASK',1:'NO MASK'}
-color_dict={0:(0,255,0),1:(0,0,255)}
+@app.route('/stream',methods=['GET', 'POST'])
+def index():
+    # rendering webpage
+    if request.method == 'POST':
+        return redirect(url_for('index2'))
+    return render_template('index.html')
+def gen(camera):
+    while True:
+        # get camera frame
+        frame = camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen(VideoCamera()),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
-while (True):
 
-    ret, img = cap.read()
-    # if frame is read correctly ret is True
-    if not ret:
-        print("Can't receive frame (stream end?). Exiting ...")
-        break
-    gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-    faces = face_clsfr.detectMultiScale(img, 1.3, 5)
+#2nd page
+@app.route('/stream_face',methods=['GET', 'POST'])
+def index2():
+    # rendering webpage
+    if request.method == 'POST':
+        return redirect(url_for('index'))
+    return render_template('index2.html')
+def gen2(camera2):
+    while True:
+        # get camera frame
+        frame2 = camera2.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame2 + b'\r\n\r\n')
+@app.route('/video_feed_face')
+def video_feed_face():
+    return Response(gen(VideoCamera2()),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
-    for (x, y, w, h) in faces:
-        face_img = gray[y:y + w, x:x + w]
-        resized = cv.resize(face_img, (100, 100))
-        normalized = resized / 255.0
-        reshaped = np.reshape(normalized, (1, 100, 100, 1))
-        result = model.predict(reshaped)
-        print(result)
-        label = np.argmax(result, axis=1)[0]
 
-        cv.rectangle(img, (x, y), (x + w, y + h), color_dict[label], 2)
-        cv.rectangle(img, (x, y - 40), (x + w, y), color_dict[label], -1)
-        cv.putText(img, labels_dict[label], (x, y - 10), cv.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
 
-    cv.imshow('LIVE', img)
-    key = cv.waitKey(1)
+@app.route('/login',methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != 'admin' or request.form['password'] != 'secret':
+            error = 'Invalid Username/Password.'
+        else:
+            return redirect(url_for('index'))
+    return render_template('login.html', error=error)
 
-    if cv.waitKey(1) == ord('q'):
-        break
-
-cv.destroyAllWindows()
-cap.release()
+if __name__ == '__main__':
+    # defining server ip address and port
+    app.run(host='localhost', port='5000', debug=True)
